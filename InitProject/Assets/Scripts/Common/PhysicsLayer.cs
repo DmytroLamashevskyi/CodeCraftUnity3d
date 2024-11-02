@@ -1,4 +1,5 @@
-namespace ShootEmUp
+
+namespace Assets.Scripts.Common
 {
     public enum PhysicsLayer
     {

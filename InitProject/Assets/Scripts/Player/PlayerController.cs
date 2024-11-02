@@ -1,56 +1,46 @@
+using Assets.Scripts.Units;
+using TMPro;
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class PlayerController : MonoBehaviour
+    public sealed class PlayerController : SpacecraftController
     {
-        [SerializeField]
-        private Player character;
+        [SerializeField] private KeyCode _moveLeftKey = KeyCode.LeftArrow;
+        [SerializeField] private KeyCode _moveRightKey = KeyCode.RightArrow;
+        [SerializeField] private KeyCode _shootKey = KeyCode.Space;
 
-        [SerializeField]
-        private BulletManager bulletManager;
-
-        private bool fireRequired;
-        private float moveDirection;
-
-        private void Awake()
+        private void  Awake()
         {
-            this.character.OnHealthEmpty += _ => Time.timeScale = 0;
+            _spacecraft = GetComponent<Spacecraft>();
+            _spacecraft.OnDeath += _ => Time.timeScale = 0;
         }
 
-        private void Update()
+        void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space)) 
-                fireRequired = true;
+            Shoot();
+            Move();
+        } 
+        
+        protected override void Shoot()
+        {
+            if(Input.GetKeyDown(_shootKey))
+                _spacecraft.Shoot(transform.position + Vector3.up * 3);
+        }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
-                this.moveDirection = -1;
-            else if (Input.GetKey(KeyCode.RightArrow))
-                this.moveDirection = 1;
+        protected override void Move()
+        {
+            if(Input.GetKey(_moveLeftKey))
+                _spacecraft.Move(new Vector2(-1, 0));
+            else if(Input.GetKey(_moveRightKey))
+                _spacecraft.Move(new Vector2(1, 0));
             else
-                this.moveDirection = 0;
+                _spacecraft.Move(new Vector2(0, 0));
         }
 
-        private void FixedUpdate()
+        private void OnDestroy()
         {
-            if (fireRequired)
-            {
-                bulletManager.SpawnBullet(
-                    this.character.firePoint.position,
-                    Color.blue,
-                    (int) PhysicsLayer.PLAYER_BULLET,
-                    1,
-                    true,
-                    this.character.firePoint.rotation * Vector3.up * 3
-                );
-
-                fireRequired = false;
-            }
-            
-            Vector2 moveDirection = new Vector2(this.moveDirection, 0);
-            Vector2 moveStep = moveDirection * Time.fixedDeltaTime * character.speed;
-            Vector2 targetPosition = character._rigidbody.position + moveStep;
-            character._rigidbody.MovePosition(targetPosition);
+            _spacecraft.OnDeath -= _ => Time.timeScale = 0;
         }
     }
 }
