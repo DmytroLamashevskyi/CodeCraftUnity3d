@@ -286,8 +286,8 @@ namespace Inventories
         public void WhenAddItemOnSpecifiedPositionThatAlreadyExistsThenException()
         {
             //Arrange:
-            Item item = new Item(1, 1);
-            Inventory inventory = new Inventory(5, 5);
+            var item = new Item(1, 1);
+            var inventory = new Inventory(5, 5);
             inventory.AddItem(item, 3, 3);
 
             Item addedItem = null;
@@ -414,7 +414,7 @@ namespace Inventories
         private static TestCaseData ContainsTrueCase()
         {
             var item = new Item("X", width: 2, height: 2);
-            Inventory inventory = new Inventory(5, 5,
+            var inventory = new Inventory(5, 5,
                 new KeyValuePair<Item, Vector2Int>(item,
                     Vector2Int.zero)
             );
@@ -423,7 +423,7 @@ namespace Inventories
 
         private static TestCaseData ContainsFalseCase()
         {
-            Inventory inventory = new Inventory(5, 5,
+            var inventory = new Inventory(5, 5,
                 new KeyValuePair<Item, Vector2Int>(new Item("B", 2, 2), Vector2Int.zero)
             );
             return new TestCaseData(inventory, new Item("C", 2, 2)).Returns(false).SetName("False");
@@ -431,14 +431,14 @@ namespace Inventories
 
         private static TestCaseData ContainsWhenInventoryIsEmptyCase()
         {
-            Inventory inventory = new Inventory(5, 5);
+            var inventory = new Inventory(5, 5);
             return new TestCaseData(inventory, new Item("B", 2, 2)).Returns(false)
                 .SetName("Inventory is empty");
         }
 
         private static TestCaseData ContainsWhenItemIsNullCase()
         {
-            Inventory inventory = new Inventory(5, 5);
+            var inventory = new Inventory(5, 5);
             return new TestCaseData(inventory, null).Returns(false).SetName("Item is null");
         }
 
@@ -826,7 +826,7 @@ namespace Inventories
 
         private static IEnumerable<TestCaseData> RemoveSuccessfulCases()
         {
-            Item item1 = new Item("X", width: 2, height: 2);
+            var item1 = new Item("X", width: 2, height: 2);
             yield return new TestCaseData(
                 new Inventory(width: 5, height: 5,
                     new KeyValuePair<Item, Vector2Int>(item1,
@@ -836,7 +836,7 @@ namespace Inventories
                 new Vector2Int(2, 2)
             ).SetName("Case 1");
 
-            Item item2 = new Item("X", width: 3, height: 2);
+            var item2 = new Item("X", width: 3, height: 2);
             yield return new TestCaseData(
                 new Inventory(width: 5, height: 5,
                     new KeyValuePair<Item, Vector2Int>(item2,
@@ -1320,7 +1320,7 @@ namespace Inventories
             inventory.ReorganizeSpace();
             
             //Assert:
-            Item[,] actual = new Item[inventory.Width, inventory.Height];
+            var actual = new Item[inventory.Width, inventory.Height];
             inventory.CopyTo(actual);
             Assert.AreEqual(expected, actual);
         }
