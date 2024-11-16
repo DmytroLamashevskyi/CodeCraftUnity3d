@@ -5,42 +5,42 @@ namespace Inventories
     ///Don't modify 
     public sealed class Item
     {
-        private static int ID_GEN;
+        private static int _iD_GEN;
 
-        public string Name => this.name;
-        public Vector2Int Size => this.size;
+        public string Name => this._name;
+        public Vector2Int Size => this._size;
 
-        private readonly Vector2Int size;
-        private readonly string name;
-        private readonly int id;
+        private readonly Vector2Int _size;
+        private readonly string _name;
+        private readonly int _id;
 
         public Item(string name, Vector2Int size) : this()
         {
-            this.name = name;
-            this.size = size;
+            this._name = name;
+            this._size = size;
         }
 
         public Item(string name, int width, int height) : this()
         {
-            this.name = name;
-            this.size = new Vector2Int(width, height);
+            this._name = name;
+            this._size = new Vector2Int(width, height);
         }
 
         public Item(Vector2Int size) : this()
         {
-            this.name = string.Empty;
-            this.size = size;
+            this._name = string.Empty;
+            this._size = size;
         }
 
         public Item(int width, int height) : this()
         {
-            this.name = string.Empty;
-            this.size = new Vector2Int(width, height);
+            this._name = string.Empty;
+            this._size = new Vector2Int(width, height);
         }
 
         private Item()
         {
-            this.id = ID_GEN++;
+            this._id = _iD_GEN++;
         }
 
         public override bool Equals(object obj)
@@ -53,17 +53,17 @@ namespace Inventories
 
         public bool Equals(Item other)
         {
-            return this.id == other.id;
+            return this._id == other._id;
         }
 
         public override int GetHashCode()
         {
-            return this.id;
+            return this._id;
         }
 
         public override string ToString()
         {
-            return $"{this.name}";
+            return $"{this._name}";
         }
     }
 }

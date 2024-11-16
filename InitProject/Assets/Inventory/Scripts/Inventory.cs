@@ -1,10 +1,8 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-// ReSharper disable NotResolvedInText
 
 namespace Inventories
 {
@@ -15,164 +13,428 @@ namespace Inventories
         public event Action<Item, Vector2Int> OnMoved;
         public event Action OnCleared;
 
-        public int Width => throw new NotImplementedException();
-        public int Height => throw new NotImplementedException();
-        public int Count => throw new NotImplementedException();
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public int Count => _items.Count;
 
-        public Inventory(in int width, in int height)
-            => throw new NotImplementedException();
+        private readonly Dictionary<Vector2Int, Item> _items = new Dictionary<Vector2Int, Item>();
 
-        public Inventory(
-            in int width,
-            in int height,
-            params KeyValuePair<Item, Vector2Int>[] items
-        ) : this(width, height) => throw new NotImplementedException();
+        public Inventory(int width, int height)
+        {
+            if(width <= 0 || height <= 0)
+                throw new ArgumentOutOfRangeException("Width and Height must be greater than 0.");
 
-        public Inventory(
-            in int width,
-            in int height,
-            params Item[] items
-        ) : this(width, height) => throw new NotImplementedException();
+            Width = width;
+            Height = height;
+        }
 
-        public Inventory(
-            in int width,
-            in int height,
-            in IEnumerable<KeyValuePair<Item, Vector2Int>> items
-        ) : this(width, height) => throw new NotImplementedException();
+        public Inventory(int width, int height, params KeyValuePair<Item, Vector2Int>[] items)
+            : this(width, height)
+        {
+            if(items is null) throw new ArgumentNullException(nameof(items));
+            foreach(var item in items)
+                AddItem(item.Key, item.Value);
+        }
 
-        public Inventory(
-            in int width,
-            in int height,
-            in IEnumerable<Item> items
-        ) : this(width, height) => throw new NotImplementedException();
+        public Inventory(int width, int height, params Item[] items)
+            : this(width, height)
+        {
+            if(items is null) throw new ArgumentNullException(nameof(items));
+            foreach(var item in items)
+                AddItem(item);
+        }
 
-        /// <summary>
-        /// Checks for adding an item on a specified position
-        /// </summary>
-        public bool CanAddItem(in Item item, in Vector2Int position)
-            => throw new NotImplementedException();
+        public Inventory(int width, int height, IEnumerable<KeyValuePair<Item, Vector2Int>> items)
+            : this(width, height)
+        {
+            if(items is null) throw new ArgumentNullException(nameof(items));
+            foreach(var item in items)
+                AddItem(item.Key, item.Value);
+        }
 
-        public bool CanAddItem(in Item item, in int posX, in int posY)
-            => throw new NotImplementedException();
+        public Inventory(int width, int height, IEnumerable<Item> items)
+            : this(width, height)
+        {
+            if(items is null) throw new ArgumentNullException(nameof(items));
+            foreach(var item in items)
+                AddItem(item);
+        }
 
-        /// <summary>
-        /// Adds an item on a specified position if not exists
-        /// </summary>
-        public bool AddItem(in Item item, in Vector2Int position)
-            => throw new NotImplementedException();
+        public bool CanAddItem(Item item, Vector2Int position)
+        { 
+            if(item == null)
+                return false;
 
-        public bool AddItem(in Item item, in int posX, in int posY)
-            => throw new NotImplementedException();
+            if(item.Size.x <= 0 || item.Size.y <= 0)
+                throw new ArgumentException("Item size must be greater than zero.");
 
-        /// <summary>
-        /// Checks for adding an item on a free position
-        /// </summary>
-        public bool CanAddItem(in Item item)
-            => throw new NotImplementedException();
+            if(_items.ContainsValue(item))
+                return false;
 
-        /// <summary>
-        /// Adds an item on a free position
-        /// </summary>
-        public bool AddItem(in Item item)
-            => throw new NotImplementedException();
+            if(!IsWithinBounds(position, item.Size))
+                return false;
+             
+            if(IntersectsWithExistingItems(item, position))
+                return false;
 
-        /// <summary>
-        /// Returns a free position for a specified item
-        /// </summary>
-        public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
-            => throw new NotImplementedException();
-        
-        /// <summary>
-        /// Checks if a specified item exists
-        /// </summary>
-        public bool Contains(in Item item)
-            => throw new NotImplementedException();
+            return true;
+        }
 
-        /// <summary>
-        /// Checks if a specified position is occupied
-        /// </summary>
-        public bool IsOccupied(in Vector2Int position)
-            => throw new NotImplementedException();
 
-        public bool IsOccupied(in int x, in int y)
-            => throw new NotImplementedException();
+        public bool CanAddItem(Item item, int posX, int posY)
+            => CanAddItem(item, new Vector2Int(posX, posY));
 
-        /// <summary>
-        /// Checks if a position is free
-        /// </summary>
-        public bool IsFree(in Vector2Int position)
-            => throw new NotImplementedException();
+        public bool AddItem(Item item, Vector2Int position)
+        {
+            if(item == null)
+                return false; 
 
-        public bool IsFree(in int x, in int y)
-            => throw new NotImplementedException();
+            if(_items.ContainsValue(item))
+                return false;
 
-        /// <summary>
-        /// Removes a specified item if exists
-        /// </summary>
-        public bool RemoveItem(in Item item)
-            => throw new NotImplementedException();
+            if(!CanAddItem(item, position))
+                return false;
 
-        public bool RemoveItem(in Item item, out Vector2Int position)
-            => throw new NotImplementedException();
+            _items.Add(position, item);
+            OnAdded?.Invoke(item, position);
+            return true;
+        }  
 
-        /// <summary>
-        /// Returns an item at specified position 
-        /// </summary>
-        public Item GetItem(in Vector2Int position)
-            => throw new NotImplementedException();
+        public bool AddItem(Item item, int posX, int posY)
+            => AddItem(item, new Vector2Int(posX, posY));
 
-        public Item GetItem(in int x, in int y)
-            => throw new NotImplementedException();
+        public bool CanAddItem(Item item)
+        {
+            if(item == null)
+               return false;
 
-        public bool TryGetItem(in Vector2Int position, out Item item)
-            => throw new NotImplementedException();
+            if(item.Size.x <= 0 || item.Size.y <= 0)
+                throw new ArgumentException();  
 
-        public bool TryGetItem(in int x, in int y, out Item item)
-            => throw new NotImplementedException();
+            if(_items.ContainsValue(item))
+                return false;
 
-        /// <summary>
-        /// Returns matrix positions of a specified item 
-        /// </summary>
-        public Vector2Int[] GetPositions(in Item item)
-            => throw new NotImplementedException();
+            return FindFreePosition(item.Size, out _);
+        }
 
-        public bool TryGetPositions(in Item item, out Vector2Int[] positions)
-            => throw new NotImplementedException();
-        
-        /// <summary>
-        /// Clears all inventory items
-        /// </summary>
+        public bool AddItem(Item item)
+        {
+            if(item == null)
+                return false;
+
+            if(!FindFreePosition(item.Size, out Vector2Int position))
+                return false;
+
+            return AddItem(item, position);
+        }
+
+        public bool FindFreePosition(Vector2Int size, out Vector2Int freePosition)
+        {
+            if(size.x <= 0 || size.y <= 0)
+                throw new ArgumentOutOfRangeException("Invalid size.");
+
+            for(int y = 0; y <= Height - size.y; y++)
+            {
+                for(int x = 0; x <= Width - size.x; x++)
+                {
+                    var position = new Vector2Int(x, y);
+                    if(CanAddItem(new Item(size), position))
+                    {
+                        freePosition = position;
+                        return true;
+                    }
+                }
+            }
+
+            freePosition = Vector2Int.zero;
+            return false;
+        }
+
+
+        public bool Contains(Item item)
+        {
+            if(item == null)
+                return false;
+
+            return _items.ContainsValue(item);
+        }
+
+        public bool IsOccupied(Vector2Int position)
+            => IsOccupied(position.x, position.y);
+
+        public bool IsOccupied(int x, int y)
+        {
+            return _items.Any(kvp =>
+            {
+                var itemPos = kvp.Key;
+                var itemSize = kvp.Value.Size;
+                return x >= itemPos.x && x < itemPos.x + itemSize.x &&
+                       y >= itemPos.y && y < itemPos.y + itemSize.y;
+            });
+        }
+
+        public bool IsFree(Vector2Int position)
+            => !IsOccupied(position);
+
+        public bool IsFree(int x, int y)
+            => !IsOccupied(x, y);
+
+        public bool RemoveItem(Item item)
+        {
+            if(item == null)
+                return false;
+
+            if(_items.ContainsValue(item))
+            {
+                var position = _items.First(kvp => kvp.Value.Equals(item)).Key;
+                _items.Remove(position);
+                OnRemoved?.Invoke(item, position);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool RemoveItem(Item item, out Vector2Int position)
+        {
+            if(item == null || !_items.ContainsValue(item))
+            {
+                position = Vector2Int.zero;
+                return false;
+            }
+
+            position = _items.First(kvp => kvp.Value.Equals(item)).Key;
+            _items.Remove(position);
+            OnRemoved?.Invoke(item, position);
+            return true;
+        }
+
+        public Item GetItem(Vector2Int position)
+            => GetItem(position.x, position.y);
+
+        public Item GetItem(int x, int y)
+        { 
+            if(x < 0 || y < 0 || x >= Width || y >= Height)
+                throw new IndexOutOfRangeException();
+
+            foreach(var kvp in _items)
+            {
+                var itemPos = kvp.Key;
+                var itemSize = kvp.Value.Size;
+                 
+                if(x >= itemPos.x && x < itemPos.x + itemSize.x &&
+                    y >= itemPos.y && y < itemPos.y + itemSize.y)
+                {
+                    return kvp.Value;
+                }
+            }
+             
+            throw new NullReferenceException();
+        }
+
+
+        public bool TryGetItem(Vector2Int position, out Item item)
+            => TryGetItem(position.x, position.y, out item);
+
+        public bool TryGetItem(int x, int y, out Item item)
+        {
+            item = null;
+             
+            if(x < 0 || y < 0 || x >= Width || y >= Height)
+                return false;
+
+            foreach(var kvp in _items)
+            {
+                var itemPos = kvp.Key;
+                var itemSize = kvp.Value.Size;
+                 
+                if(x >= itemPos.x && x < itemPos.x + itemSize.x &&
+                    y >= itemPos.y && y < itemPos.y + itemSize.y)
+                {
+                    item = kvp.Value;
+                    return true;
+                }
+            } 
+            return false;
+        }
+
+
+        public Vector2Int[] GetPositions(Item item)
+        {
+            if(item == null)
+                throw new NullReferenceException("Item is null.");
+
+            if(!_items.ContainsValue(item))
+                throw new KeyNotFoundException("Item not found in inventory.");
+
+            var result = new List<Vector2Int>();
+            var position = _items.First(kvp => kvp.Value.Equals(item)).Key;
+
+            for(int x = 0; x < item.Size.x; x++)
+            {
+                for(int y = 0; y < item.Size.y; y++)
+                {
+                    result.Add(new Vector2Int(position.x + x, position.y + y));
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        public bool TryGetPositions(Item item, out Vector2Int[] positions)
+        { 
+            if(item == null)
+            {
+                positions = null;
+                return false;
+            }
+             
+            if(!_items.ContainsValue(item))
+            {
+                positions = null;
+                return false;
+            } 
+            positions = GetPositions(item);
+            return true;
+        }
+
+
         public void Clear()
-            => throw new NotImplementedException();
-        
-        /// <summary>
-        /// Returns a count of items with a specified name
-        /// </summary>
+        {
+            if(_items.Count > 0)
+            {
+                _items.Clear();
+                OnCleared?.Invoke();
+            }
+        }
+
         public int GetItemCount(string name)
-            => throw new NotImplementedException();
+        {
+            return _items.Values.Count(item => item.Name == name);
+        }
 
-        /// <summary>
-        /// Moves a specified item to a target position if it exists
-        /// </summary>
-        public bool MoveItem(in Item item, in Vector2Int newPosition)
-            => throw new NotImplementedException();
-        
-        /// <summary>
-        /// Reorganizes inventory space to make the free area uniform
-        /// </summary>
+        public bool MoveItem(Item item, Vector2Int newPosition)
+        {
+            if(item == null)
+                throw new ArgumentNullException();
+
+            // Проверяем, существует ли предмет в инвентаре
+            if(!_items.ContainsValue(item))
+                return false;
+
+            // Проверяем, помещается ли предмет в границы инвентаря
+            if(!IsWithinBounds(newPosition, item.Size))
+                return false;
+
+            // Проверяем, пересекается ли предмет с другими предметами, кроме самого себя
+            if(IntersectsWithOtherItems(item, newPosition))
+                return false;
+
+            // Удаляем предмет с текущей позиции
+            var oldPosition = _items.First(kvp => kvp.Value.Equals(item)).Key;
+            _items.Remove(oldPosition);
+
+            // Добавляем предмет на новую позицию
+            _items[newPosition] = item;
+
+            // Вызываем событие
+            OnMoved?.Invoke(item, newPosition);
+            return true;
+        }
+
+
+
         public void ReorganizeSpace()
-            => throw new NotImplementedException();
+        { 
+            var itemsToReorganize = _items.ToList();
+             
+            Clear();
+             
+            itemsToReorganize.Sort((a, b) =>
+            {
+                int areaA = a.Value.Size.x * a.Value.Size.y;
+                int areaB = b.Value.Size.x * b.Value.Size.y;
 
-        /// <summary>
-        /// Copies inventory items to a specified matrix
-        /// </summary>
-        public void CopyTo(in Item[,] matrix)
-            => throw new NotImplementedException();
+                int comparison = areaB.CompareTo(areaA);
+                return comparison != 0 ? comparison : string.Compare(a.Value.Name, b.Value.Name, StringComparison.Ordinal);
+            });
+             
+            foreach(var kvp in itemsToReorganize)
+            {
+                var item = kvp.Value;
+                 
+                if(!FindFreePosition(item.Size, out var freePosition))
+                    throw new InvalidOperationException();
+                 
+                AddItem(item, freePosition);
+            }
+        }
+
+
+
+        public void CopyTo(Item[,] matrix)
+        {
+            if(matrix.GetLength(0) != Width || matrix.GetLength(1) != Height)
+                throw new ArgumentException("Matrix dimensions do not match inventory size.");
+
+            foreach(var kvp in _items)
+            {
+                var position = kvp.Key;
+                var item = kvp.Value;
+
+                for(int x = 0; x < item.Size.x; x++)
+                {
+                    for(int y = 0; y < item.Size.y; y++)
+                    {
+                        matrix[position.x + x, position.y + y] = item;
+                    }
+                }
+            }
+        }
 
         public IEnumerator<Item> GetEnumerator()
-            => throw new NotImplementedException();
+            => _items.Values.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
-            => throw new NotImplementedException();
+            => GetEnumerator();
+
+        private bool IsWithinBounds(Vector2Int position, Vector2Int size)
+        {
+            return position.x >= 0 && position.y >= 0 &&
+                   position.x + size.x <= Width &&
+                   position.y + size.y <= Height;
+        }
+
+        private bool IntersectsWithExistingItems(Item item, Vector2Int position)
+        {
+            var newRect = new RectInt(position, item.Size);
+
+            foreach(var kvp in _items)
+            {
+                var existingRect = new RectInt(kvp.Key, kvp.Value.Size);
+                if(newRect.Overlaps(existingRect))
+                    return true;
+            }
+
+            return false;
+        }
+        private bool IntersectsWithOtherItems(Item item, Vector2Int newPosition)
+        {
+            var newRect = new RectInt(newPosition, item.Size);
+
+            foreach(var kvp in _items)
+            {
+                // Игнорируем сам предмет
+                if(kvp.Value.Equals(item))
+                    continue;
+
+                var existingRect = new RectInt(kvp.Key, kvp.Value.Size);
+                if(newRect.Overlaps(existingRect))
+                    return true;
+            }
+
+            return false;
+        }
+
     }
 }
