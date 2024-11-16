@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Inventories
 {
@@ -22,7 +23,7 @@ namespace Inventories
         public Inventory(int width, int height)
         {
             if(width <= 0 || height <= 0)
-                throw new ArgumentOutOfRangeException("Width and Height must be greater than 0.");
+                throw new ArgumentOutOfRangeException();
 
             Width = width;
             Height = height;
@@ -31,7 +32,7 @@ namespace Inventories
         public Inventory(int width, int height, params KeyValuePair<Item, Vector2Int>[] items)
             : this(width, height)
         {
-            if(items is null) throw new ArgumentNullException(nameof(items));
+            if(items is null) throw new ArgumentNullException();
             foreach(var item in items)
                 AddItem(item.Key, item.Value);
         }
@@ -39,7 +40,7 @@ namespace Inventories
         public Inventory(int width, int height, params Item[] items)
             : this(width, height)
         {
-            if(items is null) throw new ArgumentNullException(nameof(items));
+            if(items is null) throw new ArgumentNullException();
             foreach(var item in items)
                 AddItem(item);
         }
@@ -47,7 +48,7 @@ namespace Inventories
         public Inventory(int width, int height, IEnumerable<KeyValuePair<Item, Vector2Int>> items)
             : this(width, height)
         {
-            if(items is null) throw new ArgumentNullException(nameof(items));
+            if(items is null) throw new ArgumentNullException();
             foreach(var item in items)
                 AddItem(item.Key, item.Value);
         }
@@ -55,7 +56,7 @@ namespace Inventories
         public Inventory(int width, int height, IEnumerable<Item> items)
             : this(width, height)
         {
-            if(items is null) throw new ArgumentNullException(nameof(items));
+            if(items is null) throw new ArgumentNullException();
             foreach(var item in items)
                 AddItem(item);
         }
@@ -66,18 +67,9 @@ namespace Inventories
                 return false;
 
             if(item.Size.x <= 0 || item.Size.y <= 0)
-                throw new ArgumentException("Item size must be greater than zero.");
+                throw new ArgumentException();
 
-            if(_items.ContainsValue(item))
-                return false;
-
-            if(!IsWithinBounds(position, item.Size))
-                return false;
-             
-            if(IntersectsWithExistingItems(item, position))
-                return false;
-
-            return true;
+            return !(_items.ContainsValue(item) || !IsWithinBounds(position, item.Size) ||  IntersectsWithExistingItems(item, position));
         }
 
 
@@ -85,23 +77,19 @@ namespace Inventories
             => CanAddItem(item, new Vector2Int(posX, posY));
 
         public bool AddItem(Item item, Vector2Int position)
+            => AddItem(item, position.x, position.y);
+
+        public bool AddItem(Item item, int x, int y)
         {
-            if(item == null)
-                return false; 
+            if(item == null || _items.ContainsValue(item) || !CanAddItem(item, x, y))
+                return false;  
 
-            if(_items.ContainsValue(item))
-                return false;
+            var newPosition = new Vector2Int(x, y);
+            _items.Add(newPosition, item);
+            OnAdded?.Invoke(item, newPosition);
 
-            if(!CanAddItem(item, position))
-                return false;
-
-            _items.Add(position, item);
-            OnAdded?.Invoke(item, position);
             return true;
-        }  
-
-        public bool AddItem(Item item, int posX, int posY)
-            => AddItem(item, new Vector2Int(posX, posY));
+        }
 
         public bool CanAddItem(Item item)
         {
@@ -131,7 +119,7 @@ namespace Inventories
         public bool FindFreePosition(Vector2Int size, out Vector2Int freePosition)
         {
             if(size.x <= 0 || size.y <= 0)
-                throw new ArgumentOutOfRangeException("Invalid size.");
+                throw new ArgumentOutOfRangeException();
 
             for(int y = 0; y <= Height - size.y; y++)
             {
@@ -174,7 +162,7 @@ namespace Inventories
         }
 
         public bool IsFree(Vector2Int position)
-            => !IsOccupied(position);
+            => !IsOccupied(position.x, position.y);
 
         public bool IsFree(int x, int y)
             => !IsOccupied(x, y);
@@ -262,10 +250,10 @@ namespace Inventories
         public Vector2Int[] GetPositions(Item item)
         {
             if(item == null)
-                throw new NullReferenceException("Item is null.");
+                throw new NullReferenceException();
 
             if(!_items.ContainsValue(item))
-                throw new KeyNotFoundException("Item not found in inventory.");
+                throw new KeyNotFoundException();
 
             var result = new List<Vector2Int>();
             var position = _items.First(kvp => kvp.Value.Equals(item)).Key;
@@ -318,26 +306,14 @@ namespace Inventories
             if(item == null)
                 throw new ArgumentNullException();
 
-            // Проверяем, существует ли предмет в инвентаре
-            if(!_items.ContainsValue(item))
-                return false;
+            if(!_items.ContainsValue(item) || !IsWithinBounds(newPosition, item.Size) || IntersectsWithOtherItems(item, newPosition))
+                return false; 
 
-            // Проверяем, помещается ли предмет в границы инвентаря
-            if(!IsWithinBounds(newPosition, item.Size))
-                return false;
-
-            // Проверяем, пересекается ли предмет с другими предметами, кроме самого себя
-            if(IntersectsWithOtherItems(item, newPosition))
-                return false;
-
-            // Удаляем предмет с текущей позиции
             var oldPosition = _items.First(kvp => kvp.Value.Equals(item)).Key;
             _items.Remove(oldPosition);
 
-            // Добавляем предмет на новую позицию
             _items[newPosition] = item;
 
-            // Вызываем событие
             OnMoved?.Invoke(item, newPosition);
             return true;
         }
@@ -375,7 +351,7 @@ namespace Inventories
         public void CopyTo(Item[,] matrix)
         {
             if(matrix.GetLength(0) != Width || matrix.GetLength(1) != Height)
-                throw new ArgumentException("Matrix dimensions do not match inventory size.");
+                throw new ArgumentException();
 
             foreach(var kvp in _items)
             {
@@ -424,7 +400,6 @@ namespace Inventories
 
             foreach(var kvp in _items)
             {
-                // Игнорируем сам предмет
                 if(kvp.Value.Equals(item))
                     continue;
 
