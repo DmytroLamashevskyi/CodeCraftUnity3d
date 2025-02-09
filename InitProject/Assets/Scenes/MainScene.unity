@@ -556,6 +556,7 @@ MonoBehaviour:
   _snake: {fileID: 1446817787}
   _player: {fileID: 18340448}
   _gameCycle: {fileID: 978391903}
+  _coinPrefub: {fileID: 1221131666036007499, guid: f37c023e6b8b06149a4215320dd7e482, type: 3}
 --- !u!1 &977364156
 GameObject:
   m_ObjectHideFlags: 0

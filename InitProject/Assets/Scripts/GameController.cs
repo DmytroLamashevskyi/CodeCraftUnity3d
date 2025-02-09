@@ -35,6 +35,7 @@ public class GameController : ITickable, IDisposable
 
         _snake.OnMoved += HandleSnakeMove;
         _snake.OnSelfCollided += HandleGameOver;
+        PlaceCoin();
     }
 
 
@@ -82,11 +83,12 @@ public class GameController : ITickable, IDisposable
     private void PlaceCoin()
     {
         _coin.Position = _worldBounds.GetRandomPosition();
+        
     }
 
     private void SetDifficulty()
     {
-        if(_difficulty.Current != _score.Current / 3)
+        if(_difficulty.Current > _score.Current / 10)
         {
             _difficulty.Next(out int diff);
         }
