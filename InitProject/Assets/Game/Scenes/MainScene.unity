@@ -266,6 +266,10 @@ PrefabInstance:
       propertyPath: speed
       value: -3
       objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #2
+      objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -449,6 +453,10 @@ PrefabInstance:
       propertyPath: speed
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #9
+      objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -614,6 +622,10 @@ PrefabInstance:
     - target: {fileID: 5553639715843108117, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: speed
       value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #4
       objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
@@ -1036,6 +1048,10 @@ PrefabInstance:
       propertyPath: speed
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #5
+      objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1201,6 +1217,10 @@ PrefabInstance:
     - target: {fileID: 5553639715843108117, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: speed
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #3
       objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
@@ -1526,6 +1546,10 @@ PrefabInstance:
       propertyPath: speed
       value: -5
       objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #8
+      objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1691,6 +1715,10 @@ PrefabInstance:
     - target: {fileID: 5553639715843108117, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: speed
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #7
       objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
@@ -2049,6 +2077,10 @@ PrefabInstance:
     - target: {fileID: 5553639715843108117, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: speed
       value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #6
       objectReference: {fileID: 0}
     - target: {fileID: 6217485614801709033, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: m_Sprite
@@ -2455,6 +2487,10 @@ PrefabInstance:
     - target: {fileID: 5553639715843108117, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: speed
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6141009738354460705, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
+      propertyPath: _planetName
+      value: Planet #1
       objectReference: {fileID: 0}
     - target: {fileID: 8801953262427805897, guid: 368c7b958afaee34caa5e1b9338e5e65, type: 3}
       propertyPath: _name
