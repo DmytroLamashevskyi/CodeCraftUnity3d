@@ -12,7 +12,7 @@ public interface IPlanetView
     void SetIncomeProgress(float progress);
     void SetIncomeReady(bool isReady);
     void SetIncomeLabel(string value);
-    void SetPriceLabel(int value);
+    void SetPriceLabel(int value, bool isMaxLvl);
     void PlayCoinAnimation();
     void OnClick(Action callback);
     void OnLongPress(Action onLongPress);
@@ -41,9 +41,10 @@ public class PlanetView : MonoBehaviour, IPlanetView
     public void SetIncomeProgress(float progress) => _incomPrgBar.fillAmount = progress;
     public void SetIncomeReady(bool isReady) => _coin.SetActive(isReady);
     public void SetIncomeLabel(string value) => _incomLabel.text = value;
-    public void SetPriceLabel(int value) 
+
+    public void SetPriceLabel(int value, bool isMaxLvl) 
     {
-        _pricePanel.SetActive(value > 0);
+        _pricePanel.SetActive(isMaxLvl);
         _priceLabel.text = value.ToString(); 
     }
 

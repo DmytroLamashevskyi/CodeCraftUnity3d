@@ -3,7 +3,6 @@ using Modules.Utils;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Zenject;
-using Random = UnityEngine.Random;
 
 namespace Modules.Planets
 {
