@@ -12,7 +12,7 @@ public interface IPlanetView
     void SetIncomeProgress(float progress);
     void SetIncomeReady(bool isReady);
     void SetIncomeLabel(string value);
-    void SetPriceLabel(string value);
+    void SetPriceLabel(int value);
     void PlayCoinAnimation();
     void OnClick(Action callback);
     void OnLongPress(Action onLongPress);
@@ -30,6 +30,7 @@ public class PlanetView : MonoBehaviour, IPlanetView
     [SerializeField] private Image _incomPrgBar;
     [SerializeField] private TMP_Text _incomLabel;
     [SerializeField] private TMP_Text _priceLabel;
+    [SerializeField] private GameObject _pricePanel;
     [SerializeField] private SmartButton _smartButton;
 
     private Action _clickAction;
@@ -40,7 +41,11 @@ public class PlanetView : MonoBehaviour, IPlanetView
     public void SetIncomeProgress(float progress) => _incomPrgBar.fillAmount = progress;
     public void SetIncomeReady(bool isReady) => _coin.SetActive(isReady);
     public void SetIncomeLabel(string value) => _incomLabel.text = value;
-    public void SetPriceLabel(string value) => _priceLabel.text = value;
+    public void SetPriceLabel(int value) 
+    {
+        _pricePanel.SetActive(value > 0);
+        _priceLabel.text = value.ToString(); 
+    }
 
     public void PlayCoinAnimation()
     {

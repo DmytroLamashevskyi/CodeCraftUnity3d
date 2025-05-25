@@ -22,7 +22,7 @@ public class PlanetPresenter : IInitializable
         _view.SetLocked(!_planet.IsUnlocked);
         _view.SetIcon(_planet.GetIcon(_planet.IsUnlocked));
         _view.SetIncomeLabel($"{_planet.MinuteIncome}/min");
-        _view.SetPriceLabel(_planet.Price.ToString());
+        _view.SetPriceLabel(_planet.Price);
 
         _view.OnClick(OnClick);
         _view.OnLongPress(OnLongPress);
@@ -38,7 +38,7 @@ public class PlanetPresenter : IInitializable
         _planet.OnUpgraded += level =>
         {
             Debug.Log($"[PlanetPresenter] {_planet.Name} upgraded to level {level}");
-            _view.SetPriceLabel(_planet.Price.ToString());
+            _view.SetPriceLabel(_planet.Price);
         };
         _planet.OnGathered += income =>
         {
@@ -53,7 +53,7 @@ public class PlanetPresenter : IInitializable
 
         _view.SetLocked(false);
         _view.SetIcon(_planet.GetIcon(true));
-        _view.SetPriceLabel(_planet.Price.ToString());
+        _view.SetPriceLabel(_planet.Price);
     }
 
     private void OnClick()

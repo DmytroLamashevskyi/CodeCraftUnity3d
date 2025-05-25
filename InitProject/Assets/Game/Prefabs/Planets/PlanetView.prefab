@@ -502,6 +502,7 @@ MonoBehaviour:
   _incomPrgBar: {fileID: 6948507870913343312}
   _incomLabel: {fileID: 8019802931863089282}
   _priceLabel: {fileID: 5444377921757551026}
+  _pricePanel: {fileID: 6850814019076832775}
   _smartButton: {fileID: 5583372068559771244}
 --- !u!1 &5564512366540979095
 GameObject:
